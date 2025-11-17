@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install Android NDK
       run: |
@@ -40,8 +40,8 @@ jobs:
         cd wrapper_zip
         zip -r ../xclipse_wrapper.zip .
 
-    - name: Upload ZIP artifact
-      uses: actions/upload-artifact@v3
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
       with:
         name: xclipse_wrapper
         path: xclipse_wrapper.zip
