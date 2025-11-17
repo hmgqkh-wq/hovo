@@ -1,0 +1,47 @@
+name: Build Xclipse Wrapper
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Android NDK
+      run: |
+        sudo apt update
+        sudo apt install -y wget unzip
+        wget https://dl.google.com/android/repository/android-ndk-r26d-linux.zip
+        unzip android-ndk-r26d-linux.zip
+        mv android-ndk-r26d ndk
+
+    - name: Build libxeno_wrapper.so
+      run: |
+        ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang \
+          -shared -fPIC \
+          libxeno_wrapper.c \
+          -ldl \
+          -o libxeno_wrapper.so
+
+    - name: Prepare ZIP
+      run: |
+        mkdir wrapper_zip
+        cp manifest.json wrapper_zip/
+        cp libxeno_wrapper.so wrapper_zip/
+        mkdir wrapper_zip/config
+        cp config/*.json wrapper_zip/config/
+        cd wrapper_zip
+        zip -r ../xclipse_wrapper.zip .
+
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: xclipse_wrapper
+        path: xclipse_wrapper.zip
