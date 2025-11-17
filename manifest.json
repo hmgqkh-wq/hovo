@@ -1,0 +1,25 @@
+{
+  "name": "xclipse-940-collector",
+  "driver": "libxeno_wrapper.so",
+  "entrypoint": "xeno_init",
+  "target": "vulkan1.3",
+  "features": {
+    "spirv_embedded": true,
+    "pipeline_cache": true,
+    "descriptor_robustness": true,
+    "shader_object": true,
+    "dynamic_rendering": true,
+    "memory_budget": true,
+    "debug_logging": true
+  },
+  "logging": {
+    "enabled": true,
+    "path": "xclipse_logs",
+    "level": "verbose",
+    "collect_gpu_calls": true,
+    "collect_renderpass": true,
+    "collect_memory": true,
+    "collect_pipelines": true
+  },
+  "notes": "Phase-1 data collector for Eden + Xclipse 940"
+}
