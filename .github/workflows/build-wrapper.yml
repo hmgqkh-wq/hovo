@@ -10,26 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install LLVM and build tools
+    - name: Download Android NDK
       run: |
-        sudo apt update
-        sudo apt install -y clang lld
+        wget https://dl.google.com/android/repository/android-ndk-r26d-linux.zip
+        unzip android-ndk-r26d-linux.zip
+        mv android-ndk-r26d ndk
 
-    - name: Build libxeno_wrapper.so
+    - name: Build .so
       run: |
         mkdir -p build
-        clang \
+        ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang \
           -shared \
           -fPIC \
           -O2 \
-          -target aarch64-linux-android31 \
-          -o build/libxeno_wrapper.so \
-          libxeno_wrapper.c
+          libxeno_wrapper.c \
+          -o build/libxeno_wrapper.so
 
-    - name: Copy manifest and config
+    - name: Copy manifest/config
       run: |
         cp manifest.json build/
         cp -r config build/
@@ -42,7 +42,7 @@ jobs:
           manifest.json \
           config
 
-    - name: Upload built ZIP
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: xclipse-wrapper
