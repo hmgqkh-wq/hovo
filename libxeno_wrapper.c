@@ -1,37 +1,38 @@
+// libxeno_wrapper.c
+// Minimal Android-safe wrapper that EXPORTS xeno_init so Eden will call it.
+// Writes a simple test file to external storage so we can verify the wrapper ran.
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 
-static FILE* log_file = NULL;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-__attribute__((constructor))
-void xeno_init()
+// Make symbol visible so manifest "entrypoint": "xeno_init" matches.
+__attribute__((visibility("default")))
+void xeno_init(void)
 {
-    const char* path = "/sdcard/Android/data/dev.eden.eden_emulator/files/gpu_drivers/xclipse_log.txt";
-
-    log_file = fopen(path, "w");
-    if (log_file)
-    {
-        fprintf(log_file, "[XCLIPSE WRAPPER] Init OK\n");
-        fflush(log_file);
+    FILE* f = fopen("/storage/emulated/0/xclipse_log.txt", "a");
+    if (f) {
+        fprintf(f, "[XCLIPSE] xeno_init called\n");
+        fflush(f);
+        fclose(f);
     }
 }
 
-__attribute__((destructor))
-void xeno_shutdown()
+// Optional exported shutdown (not strictly required, but useful)
+__attribute__((visibility("default")))
+void xeno_shutdown(void)
 {
-    if (!log_file) return;
-
-    fprintf(log_file, "[XCLIPSE WRAPPER] Shutdown\n");
-    fflush(log_file);
-    fclose(log_file);
-    log_file = NULL;
+    FILE* f = fopen("/storage/emulated/0/xclipse_log.txt", "a");
+    if (f) {
+        fprintf(f, "[XCLIPSE] xeno_shutdown called\n");
+        fflush(f);
+        fclose(f);
+    }
 }
 
-void xeno_log(const char* text)
-{
-    if (!log_file) return;
-    fprintf(log_file, "%s\n", text);
-    fflush(log_file);
+#ifdef __cplusplus
 }
+#endif
