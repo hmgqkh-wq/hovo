@@ -1,0 +1,5 @@
+{
+  "log_vulkan_calls": true,
+  "log_memory": false,
+  "log_renderpasses": false
+}
